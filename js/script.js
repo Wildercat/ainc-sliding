@@ -21,27 +21,37 @@ function find(location) {
     }
 }
 
+function getH(id) {
+    return document.getElementById(id);
+}
+
 function gSwap(cur, tar) {
-    console.log({ 'current': find(cur).loc, 'target': find(tar).loc });
+    console.log({ 'current': find(cur), 'target': find(tar) });
+    // let temp = find(cur).loc;
+    // console.log({temp});
     find(cur).loc = tar;
     find(tar).loc = cur;
+    console.log({ 'current': find(cur), 'target': find(tar) });
     console.log(arr);
+
 
     find(cur).render();
     find(tar).render();
+    
 }
+
+
 
 class Tile {
     constructor(tileId, loc) {
         this.tileId = tileId;
         this._loc = loc;
-        this.content = mkTag('div', '', 'C' + tileId, '', 'C' + tileId);
+        this.content = mkTag('div', '', 'c' + tileId, '', 'C' + tileId);
         this.content.addEventListener('click', function () {
-            // console.log(`Clicked Tile ${tileId}`)
-            // console.log(`id of above tile: ${newLoc}`)
-            // console.log(arr[newLoc]);
-            console.log({ loc })
-            gSwap(loc, loc - 1);
+            // console.log(this.id);
+            console.log([this.parentElement.id, this.parentElement.id - 4])
+            gSwap(this.parentElement.id, this.parentElement.id - 4);
+            
 
         });
 
@@ -85,7 +95,8 @@ function init() {
     for (let i = 0; i < 4; i++) {
         let row = mkTag('div', 'row', '', '');
         for (let j = 0; j < 4; j++) {
-            row.appendChild(mkTag('div', 'col p-0', i * 4 + j, 'height: 100px', ''))
+            let id = i * 4 + j;
+            row.appendChild(mkTag('div', 'col p-0', id, 'height: 100px', ''))
         }
         app.appendChild(row);
 
