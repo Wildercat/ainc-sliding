@@ -16,7 +16,7 @@ function find(location) {
         if (arr[i].loc == location) {
             // console.log('AAAA');
             // console.log(arr[i]);
-            return arr[i];
+            return i;
         }
     }
 }
@@ -26,44 +26,69 @@ function getH(id) {
 }
 
 function gSwap(cur, tar) {
-    console.log({ 'current': find(cur), 'target': find(tar) });
+    console.log({ '1current': arr[find(cur)], 'target': arr[find(tar)] });
     // let temp = find(cur).loc;
-    // console.log({temp});
-    find(cur).loc = tar;
-    find(tar).loc = cur;
+    // // console.log({temp});
+    let curI = find(cur);
+    let tarI = find(tar);
+    arr[curI].loc = tar;
+    arr[tarI].loc = cur;
     console.log({ 'current': find(cur), 'target': find(tar) });
     console.log(arr);
 
 
-    find(cur).render();
-    find(tar).render();
-    
+    arr[find(cur)].render();
+    arr[find(tar)].render();
+
 }
 
+function locMap(rLoc) {
+    let j = rLoc % 4;
+    let i = parseInt(rLoc / 4);
+    return [i, j];
+}
 
+function proxCheck(cur, tar) {
+    let curC = locMap(cur);
+    let tarC = locMap(tar);
+    if (curC[0] == tarC[0] && Math.abs(curC[1] - tarC[1]) == 1) {
+        return true;
+    } else if (curC[1] == tarC[1] && Math.abs(curC[0] - tarC[0]) == 1) {
+        return true;
+    } else {
+        return false;
+    }
+
+}
 
 class Tile {
     constructor(tileId, loc) {
         this.tileId = tileId;
-        this._loc = loc;
+        this.loc = loc;
         this.content = mkTag('div', '', 'c' + tileId, '', 'C' + tileId);
         this.content.addEventListener('click', function () {
             // console.log(this.id);
-            console.log([this.parentElement.id, this.parentElement.id - 4])
-            gSwap(this.parentElement.id, this.parentElement.id - 4);
-            
+            // console.log(this.parentElement.id);
+            // console.log(arr[0].loc);
+            let FRESHLoc = parseInt(this.parentElement.id);
+            locMap(FRESHLoc);
 
+            if (proxCheck(FRESHLoc, arr[0].loc)) {
+
+                gSwap(FRESHLoc, arr[0].loc);
+            }
+            
         });
 
     }
 
-    get loc() {
-        return this._loc;
-    }
+    // get loc() {
+    //     return this._loc;
+    // }
 
-    set loc(freshLoc) {
-        this._loc = freshLoc;
-    }
+    // set loc(freshLoc) {
+    //     this._loc = freshLoc;
+    // }
 
     render() {
         // console.log(this);
