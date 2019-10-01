@@ -1,0 +1,1 @@
+add win checking to the randomize button!

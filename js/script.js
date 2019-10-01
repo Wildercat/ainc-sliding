@@ -71,13 +71,13 @@ class Tile {
             // console.log(this.parentElement.id);
             // console.log(arr[0].loc);
             let FRESHLoc = parseInt(this.parentElement.id);
-            locMap(FRESHLoc);
 
             if (proxCheck(FRESHLoc, arr[0].loc)) {
 
                 gSwap(FRESHLoc, arr[0].loc);
             }
-            
+            winCheck();
+
         });
 
     }
@@ -114,6 +114,45 @@ class Tile {
     // }
 }
 
+function shuffleArray(array) { // lifted straight off of stackOverflow
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function shuffle() {
+    let locArr = [];
+    for (let i = 0; i < arr.length; i++) {
+        locArr.push(i);
+    }
+    locArr = shuffleArray(locArr);
+    console.log(locArr);
+
+    for (let i = 0; i < arr.length; i++) {
+        arr[i].loc = locArr[i];
+        arr[i].render();
+    }
+}
+
+function winCheck() {
+    let win = 0;
+    for (let i = 0; i < arr.length; i++) {
+        console.log({'loc':arr[i].loc,'id':arr[i].tileId});
+        if (arr[i].loc != arr[i].tileId) {
+            win++;
+        }
+    }
+    console.log({win});
+    if (win == 0) {
+        alert('YOU WON!');
+        alert('Don\'t you love alerts?')
+        alert('Me too!');
+        alert('I\'m glad we both appreciate taking away control from the user!');
+    }
+}
+
 function init() {
     app.innerHTML = '';
 
@@ -133,6 +172,10 @@ function init() {
         tile.render();
         arr.push(tile);
     }
+    // reset btn
+    let reset = mkTag('button', 'btn btn-primary', 'reset', '', 'Shuffle');
+    reset.addEventListener('click', shuffle)
+    app.appendChild(reset);
     console.log(arr);
 }
 
