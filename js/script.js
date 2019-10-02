@@ -25,7 +25,8 @@ function getH(id) {
     return document.getElementById(id);
 }
 
-function gSwap(cur, tar) {
+function gSwap(cur) {
+    tar = arr[0].loc;
     // console.log({ '1current': arr[find(cur)], 'target': arr[find(tar)] });
     // let temp = find(cur).loc;
     // // console.log({temp});
@@ -48,9 +49,9 @@ function locMap(rLoc) {
     return [i, j];
 }
 
-function proxCheck(cur, tar) {
+function proxCheck(cur) {
     let curC = locMap(cur);
-    let tarC = locMap(tar);
+    let tarC = locMap(arr[0].loc);
     if (curC[0] == tarC[0] && Math.abs(curC[1] - tarC[1]) == 1) {
         return true;
     } else if (curC[1] == tarC[1] && Math.abs(curC[0] - tarC[0]) == 1) {
@@ -61,6 +62,22 @@ function proxCheck(cur, tar) {
 
 }
 
+function shuffle() {
+    for (let j = 0; j < 500; j++) {
+        let canMov = [];
+        for (let i = 1; i < arr.length; i++) {
+            if (proxCheck(arr[i].loc)) {
+                canMov.push(arr[i]);
+            }
+        }
+        // console.log(canMov[Math.floor(Math.random()*canMov.length)]);
+        gSwap(canMov[Math.floor(Math.random() * canMov.length)].loc);
+        // setTimeout(function () {
+        //     gSwap(canMov[Math.floor(Math.random() * canMov.length)].loc);
+        // }, 1);
+        // console.log(j);
+    }
+}
 
 
 class Tile {
@@ -74,9 +91,9 @@ class Tile {
             // console.log(arr[0].loc);
             let FRESHLoc = parseInt(this.parentElement.id);
 
-            if (proxCheck(FRESHLoc, arr[0].loc)) {
+            if (proxCheck(FRESHLoc)) {
 
-                gSwap(FRESHLoc, arr[0].loc);
+                gSwap(FRESHLoc);
                 winCheck();
             }
 
@@ -124,19 +141,19 @@ function shuffleArray(array) { // lifted straight off of stackOverflow
     return array;
 }
 
-function shuffle() {
-    let locArr = [];
-    for (let i = 0; i < arr.length; i++) {
-        locArr.push(i);
-    }
-    locArr = shuffleArray(locArr);
-    // console.log(locArr);
+// function shuffle() {
+//     let locArr = [];
+//     for (let i = 0; i < arr.length; i++) {
+//         locArr.push(i);
+//     }
+//     locArr = shuffleArray(locArr);
+//     // console.log(locArr);
 
-    for (let i = 0; i < arr.length; i++) {
-        arr[i].loc = locArr[i];
-        arr[i].render();
-    }
-}
+//     for (let i = 0; i < arr.length; i++) {
+//         arr[i].loc = locArr[i];
+//         arr[i].render();
+//     }
+// }
 
 function winCheck() {
     let win = 0;
@@ -160,7 +177,7 @@ function applyImg() {
     let img = document.getElementById('upload').files[0];
     let imgUrl = window.URL.createObjectURL(img);
     // console.log(imgUrl);
-    for (let i =1; i<arr.length;i++) {
+    for (let i = 1; i < arr.length; i++) {
         arr[i].content.setAttribute('src', imgUrl);
     }
 }
@@ -218,7 +235,7 @@ function init() {
 
     let page = document.getElementById('page');
 
-    
+
     page.appendChild(lastRow);
     // console.log(arr);
 }
