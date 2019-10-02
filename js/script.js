@@ -26,15 +26,15 @@ function getH(id) {
 }
 
 function gSwap(cur, tar) {
-    console.log({ '1current': arr[find(cur)], 'target': arr[find(tar)] });
+    // console.log({ '1current': arr[find(cur)], 'target': arr[find(tar)] });
     // let temp = find(cur).loc;
     // // console.log({temp});
     let curI = find(cur);
     let tarI = find(tar);
     arr[curI].loc = tar;
     arr[tarI].loc = cur;
-    console.log({ 'current': find(cur), 'target': find(tar) });
-    console.log(arr);
+    // console.log({ 'current': find(cur), 'target': find(tar) });
+    // console.log(arr);
 
 
     arr[find(cur)].render();
@@ -61,11 +61,13 @@ function proxCheck(cur, tar) {
 
 }
 
+
+
 class Tile {
     constructor(tileId, loc) {
         this.tileId = tileId;
         this.loc = loc;
-        this.content = mkTag('div', '', 'c' + tileId, '', 'C' + tileId);
+        this.content = mkTag('img', '', 'c' + tileId, '', 'C' + tileId);
         this.content.addEventListener('click', function () {
             // console.log(this.id);
             // console.log(this.parentElement.id);
@@ -75,8 +77,8 @@ class Tile {
             if (proxCheck(FRESHLoc, arr[0].loc)) {
 
                 gSwap(FRESHLoc, arr[0].loc);
+                winCheck();
             }
-            winCheck();
 
         });
 
@@ -128,7 +130,7 @@ function shuffle() {
         locArr.push(i);
     }
     locArr = shuffleArray(locArr);
-    console.log(locArr);
+    // console.log(locArr);
 
     for (let i = 0; i < arr.length; i++) {
         arr[i].loc = locArr[i];
@@ -139,17 +141,27 @@ function shuffle() {
 function winCheck() {
     let win = 0;
     for (let i = 0; i < arr.length; i++) {
-        console.log({'loc':arr[i].loc,'id':arr[i].tileId});
+        console.log({ 'loc': arr[i].loc, 'id': arr[i].tileId });
         if (arr[i].loc != arr[i].tileId) {
             win++;
         }
     }
-    console.log({win});
+    // console.log({win});
     if (win == 0) {
         alert('YOU WON!');
-        alert('Don\'t you love alerts?')
-        alert('Me too!');
-        alert('I\'m glad we both appreciate taking away control from the user!');
+        // alert('Don\'t you love alerts?')
+        // alert('Me too!');
+        // alert('I\'m glad we both appreciate taking away control from the user!');
+        // alert('I wonder when Ian will put together that I set up these alerts to keep going when it detects his ip');
+    }
+}
+
+function applyImg() {
+    let img = document.getElementById('upload').files[0];
+    let imgUrl = window.URL.createObjectURL(img);
+    // console.log(imgUrl);
+    for (let i =1; i<arr.length;i++) {
+        arr[i].content.setAttribute('src', imgUrl);
     }
 }
 
@@ -157,10 +169,10 @@ function init() {
     app.innerHTML = '';
 
     for (let i = 0; i < 4; i++) {
-        let row = mkTag('div', 'row', '', '');
+        let row = mkTag('div', 'row', '', 'width:400px');
         for (let j = 0; j < 4; j++) {
             let id = i * 4 + j;
-            row.appendChild(mkTag('div', 'col p-0', id, 'height: 100px', ''))
+            row.appendChild(mkTag('div', 'col p-0', id, 'height:100px; width:100px; overflow: hidden;', ''))
         }
         app.appendChild(row);
 
@@ -172,11 +184,43 @@ function init() {
         tile.render();
         arr.push(tile);
     }
+    // add images
+    for (let i = 1; i < arr.length; i++) {
+        let coords = locMap(i);
+        arr[i].content.setAttribute('src', '400img.jpg');
+        arr[i].content.setAttribute('style', `margin: -${coords[0] * 100}px 0 0 -${coords[1] * 100}px; object-fit: contain`)
+        // arr[i].content.setAttribute('style', `margin: 0px 0 0 -100px; object-fit: contain`)
+    }
+
     // reset btn
+    let lastRow = mkTag('div', 'row mt-3', '', '', '');
+    let btnCol = mkTag('div', 'col', '', '', '');
     let reset = mkTag('button', 'btn btn-primary', 'reset', '', 'Shuffle');
     reset.addEventListener('click', shuffle)
-    app.appendChild(reset);
-    console.log(arr);
+    btnCol.appendChild(reset);
+    lastRow.appendChild(btnCol);
+
+    // upload image ui
+    let uploadCol = mkTag('div', 'col', '', '', '');
+    let imgInp = mkTag('input', '', 'upload', '', '');
+    imgInp.setAttribute("type", "file");
+
+    uploadCol.appendChild(imgInp);
+
+    lastRow.appendChild(uploadCol);
+
+    let applyImgCol = mkTag('div', 'col', '', '', '');
+    let apply = mkTag('button', 'btn btn-secondary', 'apply', '', 'Apply Image');
+    apply.addEventListener('click', applyImg)
+    applyImgCol.appendChild(apply);
+
+    lastRow.appendChild(applyImgCol);
+
+    let page = document.getElementById('page');
+
+    
+    page.appendChild(lastRow);
+    // console.log(arr);
 }
 
 init();
