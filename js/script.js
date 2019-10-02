@@ -63,20 +63,22 @@ function proxCheck(cur) {
 }
 
 function shuffle() {
-    for (let j = 0; j < 500; j++) {
-        let canMov = [];
-        for (let i = 1; i < arr.length; i++) {
-            if (proxCheck(arr[i].loc)) {
-                canMov.push(arr[i]);
+    do {
+        for (let j = 0; j < 500; j++) {
+            let canMov = [];
+            for (let i = 1; i < arr.length; i++) {
+                if (proxCheck(arr[i].loc)) {
+                    canMov.push(arr[i]);
+                }
             }
+            // console.log(canMov[Math.floor(Math.random()*canMov.length)]);
+            gSwap(canMov[Math.floor(Math.random() * canMov.length)].loc);
+            // setTimeout(function () {
+            //     gSwap(canMov[Math.floor(Math.random() * canMov.length)].loc);
+            // }, 1);
+            // console.log(j);
         }
-        // console.log(canMov[Math.floor(Math.random()*canMov.length)]);
-        gSwap(canMov[Math.floor(Math.random() * canMov.length)].loc);
-        // setTimeout(function () {
-        //     gSwap(canMov[Math.floor(Math.random() * canMov.length)].loc);
-        // }, 1);
-        // console.log(j);
-    }
+    } while (winCheck());
 }
 
 
@@ -94,7 +96,9 @@ class Tile {
             if (proxCheck(FRESHLoc)) {
 
                 gSwap(FRESHLoc);
-                winCheck();
+                if (winCheck()) {
+                    winAlert();
+                }
             }
 
         });
@@ -155,21 +159,27 @@ function shuffleArray(array) { // lifted straight off of stackOverflow
 //     }
 // }
 
+function winAlert() {
+    alert('YOU WON!');
+    alert('Don\'t you love alerts?')
+    alert('Me too!');
+    alert('I\'m glad we both appreciate taking away control from the user!');
+    alert('I wonder when Ian will put together that I set up these alerts to keep going when it detects his ip');
+}
+
 function winCheck() {
     let win = 0;
     for (let i = 0; i < arr.length; i++) {
-        console.log({ 'loc': arr[i].loc, 'id': arr[i].tileId });
+        // console.log({ 'loc': arr[i].loc, 'id': arr[i].tileId });
         if (arr[i].loc != arr[i].tileId) {
             win++;
         }
     }
     // console.log({win});
     if (win == 0) {
-        alert('YOU WON!');
-        // alert('Don\'t you love alerts?')
-        // alert('Me too!');
-        // alert('I\'m glad we both appreciate taking away control from the user!');
-        // alert('I wonder when Ian will put together that I set up these alerts to keep going when it detects his ip');
+        return true;
+    } else {
+        return false;
     }
 }
 
