@@ -1,5 +1,8 @@
 var app = document.getElementById('app');
 var arr = [];
+var loopIdx = 0;
+var froze = new Set([10]);
+
 
 function mkTag(tag, clss, id, style, cont) {
     let html = document.createElement(tag);
@@ -26,7 +29,10 @@ function getH(id) {
 }
 
 function gSwap(cur) {
-    tar = arr[0].loc;
+    if (froze.has(cur)) {
+        return;
+    }
+    let tar = arr[0].loc;
     // console.log({ '1current': arr[find(cur)], 'target': arr[find(tar)] });
     // let temp = find(cur).loc;
     // // console.log({temp});
@@ -50,6 +56,7 @@ function locMap(rLoc) {
 }
 
 function proxCheck(cur) {
+    cur
     let curC = locMap(cur);
     let tarC = locMap(arr[0].loc);
     if (curC[0] == tarC[0] && Math.abs(curC[1] - tarC[1]) == 1) {
@@ -64,24 +71,116 @@ function proxCheck(cur) {
 
 function shuffle() {
     do {
-        for (let j = 0; j < 500; j++) {
-            let canMov = [];
-            for (let i = 1; i < arr.length; i++) {
-                if (proxCheck(arr[i].loc)) {
-                    canMov.push(arr[i]);
-                }
+        // for (let j = 0; j < 500; j++) {
+        let canMov = [];
+        for (let i = 1; i < arr.length; i++) {
+            if (proxCheck(arr[i].loc)) {
+                canMov.push(arr[i]);
             }
-            // console.log(canMov[Math.floor(Math.random()*canMov.length)]);
-            gSwap(canMov[Math.floor(Math.random() * canMov.length)].loc);
-            // setTimeout(function () {
-            //     gSwap(canMov[Math.floor(Math.random() * canMov.length)].loc);
-            // }, 1);
-            // console.log(j);
         }
+        // console.log(canMov[Math.floor(Math.random()*canMov.length)]);
+        gSwap(canMov[Math.floor(Math.random() * canMov.length)].loc);
+        // setTimeout(function () {
+        //     gSwap(canMov[Math.floor(Math.random() * canMov.length)].loc);
+        // }, 1);
+        // console.log(j);
+        // }
     } while (winCheck());
 }
 
+function loop() {
+    shuffle();
+    loopIdx++;
+    if (loopIdx < 300) {
+        setTimeout(loop, 40);
+    }
+}
+function moveRandom() {
+    let dir = Math.floor(Math.random() * Math.floor(4));
+    console.log(dir);
+    switch (dir) {
+        case 0:
+            gSwap(arr[0].loc + 4);
+            break;
+        case 1:
+            gSwap(arr[0].loc - 4);
+            break;
+        case 2:
+            gSwap(arr[0].loc + 1);
+            break;
+        case 3:
+            gSwap(arr[0].loc - 1);
+            break;
+        default:
+            break;
+    }
+}
 
+function giveDirect(tar, cur) {
+    let tarCo = locMap(tar);
+    let blankCo = locMap(cur);
+    let direct = [];
+    for (let i = 0; i < tarCo.length; i++) {
+        direct.push(Math.sign(tarCo[i] - blankCo[i]));
+    }
+    return direct;
+}
+
+function emptyTileMove(_tar) {
+
+    function foo(tar) {
+        let direct = giveDirect(tar, arr[0].loc);
+        // let tarCo = locMap(tar);
+        // let blankCo = locMap(arr[0].loc);
+        // // console.log({ tarCo, blankCo });
+        // // console.log({tarCo, blankCo});
+        // let direct = [];
+        // // console.log(tarCo[0] - blankCo[0]);
+        // for (let i = 0; i < tarCo.length; i++) {
+        //     direct.push(Math.sign(tarCo[i] - blankCo[i]));
+        // }
+        // if I was using a 2d array I could do all this in one for loop:
+        let dnLoc = arr[0].loc + 4;
+        let upLoc = arr[0].loc - 4;
+        let lrLoc = arr[0].loc + direct[1];
+        if (direct[0] == 1 && !froze.has(dnLoc)) {
+            gSwap(dnLoc);
+            // emptyTileMove(tar);
+        } else if (direct[0] == -1 && !froze.has(upLoc)) {
+            gSwap(upLoc);
+            // emptyTileMove(tar);
+        } else if (direct[1] && !froze.has(lrLoc)) {
+            gSwap(lrLoc);
+            // emptyTileMove(tar);
+        } else {
+            console.log('yoo');
+        }
+        direct = giveDirect(tar, arr[0].loc);
+        console.log({ direct });
+        //exit loop if we're where we want to be
+        if (!direct[0] && !direct[1]) {
+            clearInterval(loop);
+        }
+    }
+    let loop = setInterval(foo, 200, _tar);
+
+    // loopIdx = 0;
+    // loop();
+}
+function shuffleBtnClick() {
+    froze.add(10);
+    emptyTileMove(11);
+}
+
+function moveIfCan(foo) {
+    if (proxCheck(foo)) {
+
+        gSwap(foo);
+        if (winCheck()) {
+            winAlert();
+        }
+    }
+}
 class Tile {
     constructor(tileId, loc) {
         this.tileId = tileId;
@@ -92,14 +191,8 @@ class Tile {
             // console.log(this.parentElement.id);
             // console.log(arr[0].loc);
             let FRESHLoc = parseInt(this.parentElement.id);
-
-            if (proxCheck(FRESHLoc)) {
-
-                gSwap(FRESHLoc);
-                if (winCheck()) {
-                    winAlert();
-                }
-            }
+            froze.clear();
+            moveIfCan(FRESHLoc);
 
         });
 
@@ -137,34 +230,12 @@ class Tile {
     // }
 }
 
-function shuffleArray(array) { // lifted straight off of stackOverflow
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
-
-// function shuffle() {
-//     let locArr = [];
-//     for (let i = 0; i < arr.length; i++) {
-//         locArr.push(i);
-//     }
-//     locArr = shuffleArray(locArr);
-//     // console.log(locArr);
-
-//     for (let i = 0; i < arr.length; i++) {
-//         arr[i].loc = locArr[i];
-//         arr[i].render();
-//     }
-// }
-
 function winAlert() {
     alert('YOU WON!');
-    alert('Don\'t you love alerts?')
-    alert('Me too!');
-    alert('I\'m glad we both appreciate taking away control from the user!');
-    alert('I wonder when Ian will put together that I set up these alerts to keep going when it detects his ip');
+    // alert('Don\'t you love alerts?')
+    // alert('Me too!');
+    // alert('I\'m glad we both appreciate taking away control from the user!');
+    // alert('I wonder when Ian will put together that I set up these alerts to keep going when it detects his ip');
 }
 
 function winCheck() {
@@ -223,7 +294,7 @@ function init() {
     let lastRow = mkTag('div', 'row mt-3', '', '', '');
     let btnCol = mkTag('div', 'col', '', '', '');
     let reset = mkTag('button', 'btn btn-primary', 'reset', '', 'Shuffle');
-    reset.addEventListener('click', shuffle)
+    reset.addEventListener('click', shuffleBtnClick);
     btnCol.appendChild(reset);
     lastRow.appendChild(btnCol);
 
