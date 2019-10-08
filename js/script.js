@@ -100,16 +100,16 @@ function moveRandom() {
     console.log(dir);
     switch (dir) {
         case 0:
-            gSwap(arr[0].loc + 4);
+            moveIfCan(arr[0].loc + 4);
             break;
         case 1:
-            gSwap(arr[0].loc - 4);
+            moveIfCan(arr[0].loc - 4);
             break;
         case 2:
-            gSwap(arr[0].loc + 1);
+            moveIfCan(arr[0].loc + 1);
             break;
         case 3:
-            gSwap(arr[0].loc - 1);
+            moveIfCan(arr[0].loc - 1);
             break;
         default:
             break;
@@ -126,9 +126,44 @@ function giveDirect(tar, cur) {
     return direct;
 }
 
+function giveDist(tar, cur) {
+    let tarCo = locMap(tar);
+    let blankCo = locMap(cur);
+    let dist = [];
+    for (let i = 0; i < tarCo.length; i++) {
+        dist.push(tarCo[i] - blankCo[i]);
+    }
+    return dist;
+}
+
+// function solidTileMove(_tar, _cur) {
+    function solidTileMove_main(tar, curID) {
+        let curLoc = arr[curID].loc
+        froze.add(curLoc);
+        console.log(`froze set right after adding ${curLoc}:`)
+        console.log(froze);
+        let dist = giveDist(tar, curLoc);
+        let direct = giveDirect(tar, curLoc);
+        let dnLoc = curLoc + 4;
+        let upLoc = curLoc - 4;
+        let lrLoc = curLoc + direct[1];
+        if (direct[0] == 1 && !froze.has(dnLoc)) {
+            emptyTileMove(dnLoc);
+        } else if (direct[1] && !froze.has(lrLoc)) {
+            emptyTileMove(lrLoc);
+        } else if (direct[0] == -1 && !froze.has(upLoc)) {
+            emptyTileMove(upLoc);
+        }
+        
+    }
+//     let sLoop = setInterval(solidTileMove_main, 200, _tar, _cur);
+// }
+
+
 function emptyTileMove(_tar) {
 
     function foo(tar) {
+        let dist = giveDist(tar, arr[0].loc);
         let direct = giveDirect(tar, arr[0].loc);
         // let tarCo = locMap(tar);
         // let blankCo = locMap(arr[0].loc);
@@ -143,21 +178,25 @@ function emptyTileMove(_tar) {
         let dnLoc = arr[0].loc + 4;
         let upLoc = arr[0].loc - 4;
         let lrLoc = arr[0].loc + direct[1];
+        console.log(froze); 
+        // console.log({dnLoc, upLoc, lrLoc});
         if (direct[0] == 1 && !froze.has(dnLoc)) {
             gSwap(dnLoc);
-            // emptyTileMove(tar);
-        } else if (direct[0] == -1 && !froze.has(upLoc)) {
-            gSwap(upLoc);
-            // emptyTileMove(tar);
         } else if (direct[1] && !froze.has(lrLoc)) {
             gSwap(lrLoc);
-            // emptyTileMove(tar);
-        } else {
-            console.log('yoo');
+        } else if (direct[0] == -1 && !froze.has(upLoc)) {
+            gSwap(upLoc);
         }
-        direct = giveDirect(tar, arr[0].loc);
-        console.log({ direct });
-        //exit loop if we're where we want to be
+        // check if we've moved since beginning of function,
+        // if we're not target location,
+        // then move a random dir
+        newDist = giveDist(tar, arr[0].loc);
+        // console.log({ direct });
+        
+        if (dist[0] == newDist[0] && dist[1] == newDist[1] && (direct[0] || direct[1])) {
+            moveRandom();
+        }
+        //exit loop if we're where we want to be (direct = 0,0)
         if (!direct[0] && !direct[1]) {
             clearInterval(loop);
         }
@@ -168,8 +207,7 @@ function emptyTileMove(_tar) {
     // loop();
 }
 function shuffleBtnClick() {
-    froze.add(10);
-    emptyTileMove(11);
+    solidTileMove_main(15, 15)
 }
 
 function moveIfCan(foo) {
