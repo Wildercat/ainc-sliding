@@ -161,10 +161,10 @@ function shuffleArray(array) { // lifted straight off of stackOverflow
 
 function winAlert() {
     alert('YOU WON!');
-    alert('Don\'t you love alerts?')
-    alert('Me too!');
-    alert('I\'m glad we both appreciate taking away control from the user!');
-    alert('I wonder when Ian will put together that I set up these alerts to keep going when it detects his ip');
+    // alert('Don\'t you love alerts?')
+    // alert('Me too!');
+    // alert('I\'m glad we both appreciate taking away control from the user!');
+    // alert('I wonder when Ian will put together that I set up these alerts to keep going when it detects his ip');
 }
 
 function winCheck() {
@@ -215,7 +215,7 @@ function init() {
     for (let i = 1; i < arr.length; i++) {
         let coords = locMap(i);
         arr[i].content.setAttribute('src', '400img.jpg');
-        arr[i].content.setAttribute('style', `margin: -${coords[0] * 100}px 0 0 -${coords[1] * 100}px; object-fit: contain`)
+        arr[i].content.setAttribute('style', `width: 400px; margin: -${coords[0] * 100}px 0 0 -${coords[1] * 100}px; object-fit: contain`)
         // arr[i].content.setAttribute('style', `margin: 0px 0 0 -100px; object-fit: contain`)
     }
 
